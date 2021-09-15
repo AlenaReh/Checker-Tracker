@@ -88,7 +88,10 @@ const mainLobby = () => {
             case 'Quit':
                 quit();
                 break;
+            default:
+                //
 
         }
     })
 };
+
