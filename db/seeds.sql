@@ -1,11 +1,10 @@
 USE staff_db;
 
+INSERT INTO department (dep_name)
+VALUES ('Sales Lead'), ('Sales Representative'), ('Account Manager'), ('Accountant'), ('Lead Engineer'), ('Senior Engineer'), ('Junior Engineer'), ('Customer Service Representative')
 
-INSERT INTO department (departmen_name)
+INSERT INTO role (title, dep_id, salary)
 VALUES ('Sales', 'Finance', 'Engineering')
 
-INSERT INTO role (role_name, department, salary)
-VALUES ('Sales Lead', 'Sales representative', 'Account Manager', 'Accountant', 'Lead Engineer', 'Senior Engineer', 'Junior Engineer', 'Customer Service Representative')
-
-INSERT INTO employee (fisrt_name, last_name, title, department, salary, manager)
-VALUES ('Serena', 'Joy', 'Account Manager', 'Finance', 60000, 'Fred Waterford')
+INSERT INTO employee (fisrt_name, last_name, title, manager_id)
+VALUES ('Serena', 'Joy', 'Account Manager', 'Fred Waterford')
