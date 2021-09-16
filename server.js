@@ -1,121 +1,185 @@
-const inquirer = require('inquirer');
-const mysql = require('mysql2');
-const cTable = require('console.table');
+const inquirer = require("inquirer");
+const mysql = require("mysql2");
+const cTable = require("console.table");
 const chalk = require("chalk");
 
 // Connect to database
 const db = mysql.createConnection(
   {
-    host: 'localhost',
+    host: "localhost",
     // MySQL username,
-    user: 'root',
+    user: "root",
     // MySQL password
-    password: 'password',
-    database: 'staff_db'
+    password: "password",
+    database: "staff_db",
   },
   console.log(`Connected to the staff_db database.`)
 );
 
 // The users input must be a string
-const validateName = answer => {
-    const pass = answer.match(
-      /^[a-z A-Z]+$/
-    );
-    if (pass) {
-      return true;
-    }
-    return (chalk.red("Please enter a valid name."));
-  };
+const validateName = (answer) => {
+  const pass = answer.match(/^[a-z A-Z]+$/);
+  if (pass) {
+    return true;
+  }
+  return chalk.red("Please enter a valid name.");
+};
 // validate a numerical value
-const validateNumber = answer => {
-    const pass = answer.match(
-      '^[0-9]+$'
-    );
-    if (pass) {
-      return true;
-    }
-    return (chalk.red("Please enter a numeric value."));
-  };
-
-  // prompt questions
-const mainLobby = () => {
-  console.log("Hello!");
-    inquirer.prompt (
-    {
-        type: 'list',
-        name: 'mainListOfActions',
-        message: (chalk.yellow(`What would you like to do?`)),
-        choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add a Role', 'View All Departments', 'Add a Department', 'Quit']
-    }).then((choice) => {
-        switch (choice.action) {
-            case 'View All Employees':
-                viewEmployees();
-                break;
-            case 'Add Employee':
-                addEmployee();
-                break;
-            case 'Update Employee Role':
-                updateRole();
-                break;
-            case 'View All Roles':
-                viewRoles();
-                break;
-            case 'Add a Role':
-                addRole();
-                break;
-            case 'View All Departments':
-                viewDep();
-                break;
-            case 'Add a Department':
-                addDep();
-                break;
-            case 'Quit':
-                quit();
-                break;
-            default: console.log('Ooops! There is an error')
-                //
-
-        }
-    })
+const validateNumber = (answer) => {
+  const pass = answer.match("^[0-9]+$");
+  if (pass) {
+    return true;
+  }
+  return chalk.red("Please enter a numeric value.");
 };
 
-// const viewEmployees = () => {
+// prompt questions
+const mainLobby = () => {
+  console.log(chalk.red("Hello!"));
+  inquirer
+    .prompt({
+      type: "list",
+      name: "mainListOfActions",
+      message: chalk.yellow(`What would you like to do?`),
+      choices: [
+        "View All Employees",
+        "Add Employee",
+        "Update Employee Role",
+        "View All Roles",
+        "Add a Role",
+        "View All Departments",
+        "Add a Department",
+        "Quit",
+      ],
+    })
+    .then((choice) => {
+      switch (choice.mainListOfActions) {
+        case "View All Employees":
+          viewEmployees();
+          break;
+        case "Add Employee":
+          addEmployee();
+          break;
+        case "Update Employee Role":
+          updateRole();
+          break;
+        case "View All Roles":
+          viewRoles();
+          break;
+        case "Add a Role":
+          addRole();
+          break;
+        case "View All Departments":
+          viewDep();
+          break;
+        case "Add a Department":
+          addDep();
+          break;
+        case "Quit":
+          quit();
+          break;
+        default:
+          console.log("Ooops! There is an error");
+      }
+    });
+};
+
+const viewEmployees = () => {
+  db.query(
+    `SELECT first_name, last_name, role_id,roles.title, roles.salary, manager_id FROM employees JOIN roles on roles.id = employees.role_id;`,
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.table(data);
+      mainLobby();
+    }
+  );
+};
+
+const addEmployee = () => {
+  console.log("Add an employee"); 
+  db.query(`SELECT id, title FROM roles`, (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    
+    const roleData = data.map(role => ({
+      name: role.title, 
+      value: role.id
+    })); 
+    console.table("role data \n", roleData);
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "firstName",
+          message: chalk.yellow(`What is the employee's name?`),
+          validate: validateName,
+        },
+        {
+          type: "input",
+          name: "lastName",
+          message: chalk.yellow(`What is the employee's last name?`),
+          validate: validateName,
+        },
+        {
+          type: "list",
+          name: "title",
+          message: chalk.yellow(`What is the employee's title?`),
+          choices: roleData,
+        
+        }, 
+        {
+          type: "list",
+          name: "firstName",
+          message: chalk.yellow(`Who is the employee's manager?`),
+          choices: ["None", "John Doe", "June Osborn"],
+        },
+      ])
+      .then((data) => {
+        db.query(
+          "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+          [data.firstName, data.lastName, data.title, data.manager],
+          (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+            console.log("A new employee was added to the database");
+            mainLobby();
+          }
+        );
+      });
+  });
+};
+
+// const updateRole = () => {
 //   db.query (
-//     'SELECT first_name, last_name, title, department, salary, manager_id',
-//     (err, data) => {
-//       if(err) {
-//         console.log(err)
-//       }
-//       comsole.table(data);
-//       mainLobby();
-//     }
-//   )
-// }
+//   `UPDATE roles SET roles = ? WHERE id = ?`
+//   )}
 
-// const addEmployee () {
+// const viewRoles = () => {
 
 // }
 
-// const updateRole () {
+
+// const addRole = () => {
 
 // }
 
-// const viewRoles () {
+// const viewDep = () => {
 
 // }
-// const addRole (){
+
+// const addDep = () => {
 
 // }
-// const addRole () {
 
-// }
-// const viewDep () {
+const quit = () => {
+  console.log(chalk.red("See you later!"));
+  process.exit(); 
+};
 
-// }
-// const addDep () {
-
-// }
-// const quit() {
-//   console.log("See you later!")
-// }
-mainLobby ();
+mainLobby();

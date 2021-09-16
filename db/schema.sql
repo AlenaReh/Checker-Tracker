@@ -10,19 +10,23 @@ CREATE TABLE departments (
 
 CREATE TABLE roles (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(30) NOT NULL,
-  salary DECIMAL(5,2) NOT NULL,
+  title VARCHAR(50) NOT NULL,
+  salary DECIMAL(10,2) NOT NULL,
   dep_id INT NOT NULL,
-  FOREIGN KEY ()
+  FOREIGN KEY (dep_id) REFERENCES departments(id) ON DELETE CASCADE
 );
 
 CREATE TABLE employees (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
-  title INT NOT NULL,
+  role_id INT NOT NULL,
   manager_id INT NULL,
-  FOREIGN KEY (title),
-  FOREIGN KEY (manager_id)
-);
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+  FOREIGN KEY (manager_id) REFERENCES employees(id) ON DELETE SET NULL
+)
+
+
+
+
 
