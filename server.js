@@ -16,15 +16,6 @@ const db = mysql.createConnection(
   console.log(`Connected to the staff_db database.`)
 );
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-  });
-  
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-
 // The users input must be a string
 const validateName = answer => {
     const pass = answer.match(
@@ -48,6 +39,7 @@ const validateNumber = answer => {
 
   // prompt questions
 const mainLobby = () => {
+  console.log("Hello!");
     inquirer.prompt (
     {
         type: 'list',
@@ -87,3 +79,43 @@ const mainLobby = () => {
     })
 };
 
+// const viewEmployees = () => {
+//   db.query (
+//     'SELECT first_name, last_name, title, department, salary, manager_id',
+//     (err, data) => {
+//       if(err) {
+//         console.log(err)
+//       }
+//       comsole.table(data);
+//       mainLobby();
+//     }
+//   )
+// }
+
+// const addEmployee () {
+
+// }
+
+// const updateRole () {
+
+// }
+
+// const viewRoles () {
+
+// }
+// const addRole (){
+
+// }
+// const addRole () {
+
+// }
+// const viewDep () {
+
+// }
+// const addDep () {
+
+// }
+// const quit() {
+//   console.log("See you later!")
+// }
+mainLobby ();
