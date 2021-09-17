@@ -86,7 +86,9 @@ const mainLobby = () => {
 
 const viewEmployees = () => {
   db.query(
-    `SELECT first_name, last_name, role_id,roles.title, roles.salary, manager_id FROM employees JOIN roles on roles.id = employees.role_id;`,
+    `SELECT first_name, last_name, roles.title, roles.salary, departments.dep_name AS department, manager_id AS manager FROM employees 
+    JOIN roles ON roles.id = employees.role_id
+    JOIN departments ON departments.id = roles.dep_id;`,
     (err, data) => {
       if (err) {
         console.log(err);
@@ -105,7 +107,6 @@ const addEmployee = () => {
       console.log(err);
       return;
     }
-    
     const roleData = data.map(role => ({
       name: role.title, 
       value: role.id
@@ -160,9 +161,20 @@ const addEmployee = () => {
 //   `UPDATE roles SET roles = ? WHERE id = ?`
 //   )}
 
-// const viewRoles = () => {
-
-// }
+const viewRoles = () => {
+  db.query(
+    `SELECT DISTINCT title, salary, departments.dep_name AS department FROM roles 
+    JOIN departments on departments.id = roles.dep_id;`,
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.table(data);
+      mainLobby();
+    }
+  );
+};
 
 
 // const addRole = () => {
