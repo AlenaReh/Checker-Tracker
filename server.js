@@ -33,7 +33,7 @@ const validateNumber = (answer) => {
   return chalk.red("Please enter a numeric value.");
 };
 
-// prompt questions
+// main prompt questions
 const mainLobby = () => {
   console.log(chalk.red("Hello!"));
   inquirer
@@ -99,9 +99,9 @@ const viewEmployees = () => {
     }
   );
 };
-
+//Adding a new Employee to the database;
 const addEmployee = () => {
-  console.log("Add an employee"); 
+  // console.log("Add an employee"); 
   db.query(`SELECT id, title FROM roles`, (err, data) => {
     if (err) {
       console.log(err);
@@ -161,6 +161,7 @@ const addEmployee = () => {
 //   `UPDATE roles SET roles = ? WHERE id = ?`
 //   )}
 
+//function yhat allows you to view rolls
 const viewRoles = () => {
   db.query(
     `SELECT DISTINCT title, salary, departments.dep_name AS department FROM roles 
@@ -194,9 +195,41 @@ const viewDep = () => {
   );
 }
 
-// const addDep = () => {
+const addDep = () => {
+  // console.log("Add a department"); 
+  // db.query(`SELECT id, dep_name FROM departments`, (err, data) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return;
+  //   }
+    // const newDep = data.map(departments => ({
+    //   name: departments.id, 
+    //   value: departments.dep_name
+    // })); 
+    // console.table("department data \n", console.table);
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "department",
+          message: chalk.yellow(`What is the name of the department you wish to add?`),
+          validate: validateName,
+        }, 
+      ])
+      .then((data) => {
+        db.query(
+          `INSERT INTO departments (dep_name) VALUES (?)`,
+          data.department,
+          (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+            console.log(`A new department is added ${data.department} to the database`);
+            mainLobby();
+          });
+      });
+  };
 
-// }
 
 const quit = () => {
   console.log(chalk.red("See you later!"));
