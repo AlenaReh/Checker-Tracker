@@ -176,14 +176,23 @@ const viewRoles = () => {
   );
 };
 
-
 // const addRole = () => {
 
 // }
 
-// const viewDep = () => {
-
-// }
+const viewDep = () => {
+  db.query(
+    `SELECT DISTINCT dep_name FROM departments;`,
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.table(data);
+      mainLobby();
+    }
+  );
+}
 
 // const addDep = () => {
 

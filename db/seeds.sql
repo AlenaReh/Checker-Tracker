@@ -1,7 +1,7 @@
 USE staff_db;
 
 INSERT INTO departments (dep_name)
-VALUES ('Sales'), ('finance'), ('engineering');
+VALUES ('Sales'), ('Finance'), ('Engineering');
 
 INSERT INTO roles (title, salary, dep_id)
 VALUES 
