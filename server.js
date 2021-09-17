@@ -131,7 +131,6 @@ const addEmployee = () => {
           name: "title",
           message: chalk.yellow(`What is the employee's title?`),
           choices: roleData,
-        
         }, 
         {
           type: "list",
@@ -177,9 +176,54 @@ const viewRoles = () => {
   );
 };
 
+//adds a new role into the database
 // const addRole = () => {
-
-// }
+//   db.query(`SELECT DISTINCT dep_name FROM departments`, (err, data) => {
+//     if (err) {
+//       console.log(err);
+//       return;
+//     }
+//     const depData = data.map(department => ({
+//       name: department.dep_name, 
+//       value: department.id
+//     })); 
+//     // console.table("department data \n", depData);
+//   inquirer
+//       .prompt([
+//         {
+//           type: "input",
+//           name: "title",
+//           message: chalk.yellow(`What is the name of the role you wish to add?`),
+//           validate: validateName,
+//         }, 
+//         {
+//           type: "input",
+//           name: "salary",
+//           message: chalk.yellow(`What is the salary going to be for this role?`),
+//           validate: validateNumber,
+//         },
+//         {
+//           type: "list",
+//           name: "role",
+//           message: chalk.yellow(`What department does the role belong to?`),
+//           choices: depData,
+//         },
+//       ])
+//       .then((data) => {
+//         db.query(
+//           `INSERT INTO roles (title, salary, dep_id) VALUES (?, ?, ?)`,
+//           [data.title, data.salary, data.role],
+//           (err, data) => {
+//             if (err) {
+//               console.log(err);
+//             }
+//             console.log(`A new role is added to the database`);
+//             mainLobby();
+//           }
+//         );
+//       });
+//   });
+// };
 
 const viewDep = () => {
   db.query(
@@ -195,18 +239,8 @@ const viewDep = () => {
   );
 }
 
+//Adds a new department to the database;
 const addDep = () => {
-  // console.log("Add a department"); 
-  // db.query(`SELECT id, dep_name FROM departments`, (err, data) => {
-  //   if (err) {
-  //     console.log(err);
-  //     return;
-  //   }
-    // const newDep = data.map(departments => ({
-    //   name: departments.id, 
-    //   value: departments.dep_name
-    // })); 
-    // console.table("department data \n", console.table);
     inquirer
       .prompt([
         {
@@ -224,12 +258,11 @@ const addDep = () => {
             if (err) {
               console.log(err);
             }
-            console.log(`A new department is added ${data.department} to the database`);
+            console.log(`A new department ${data.department} is added to the database`);
             mainLobby();
           });
       });
   };
-
 
 const quit = () => {
   console.log(chalk.red("See you later!"));
