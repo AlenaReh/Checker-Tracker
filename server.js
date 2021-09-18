@@ -99,6 +99,7 @@ const viewEmployees = () => {
     }
   );
 };
+
 //Adding a new Employee to the database;
 const addEmployee = () => {
   // console.log("Add an employee"); 
@@ -155,10 +156,60 @@ const addEmployee = () => {
   });
 };
 
-// const updateRole = () => {
-//   db.query (
-//   `UPDATE roles SET roles = ? WHERE id = ?`
-//   )}
+
+// function for updating roles 
+const updateRole = () => {
+    db.query(`SELECT * FROM employees
+              JOIN roles ON roles.id = employees.role_id;`, 
+    (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(data);
+
+  const listOfNames = data.map(staffNames => ({
+    name: staffNames.last_name,
+    value: staffNames.id,
+  })); 
+  const rolesData = data.map(listOfRoles => ({
+    name: listOfRoles.title,
+    value: listOfRoles.id,
+  }));
+  inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "updatedEmployee",
+          message: chalk.yellow(`Which employee's role would you like to update?`),
+          choices: listOfNames,
+        },
+        {
+          type: "input",
+          name: "updatedRole",
+          message: chalk.yellow(`Which role do you wish to assign to the selected employee?`),
+          choices: rolesData,
+        },
+        // console.log(rolesData, 'staff roles'),
+      ])
+      
+      .then((data) => {
+        db.query(
+          `UPDATE roles SET roles = ? WHERE id = ?`,
+          [data.roles, data.role],
+          (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+            console.log(`An employee role has been successfully updated in the database!`);
+            mainLobby();
+          }
+        );
+      });
+  });
+}
+
+
 
 //function yhat allows you to view rolls
 const viewRoles = () => {
@@ -177,53 +228,53 @@ const viewRoles = () => {
 };
 
 //adds a new role into the database
-// const addRole = () => {
-//   db.query(`SELECT DISTINCT dep_name FROM departments`, (err, data) => {
-//     if (err) {
-//       console.log(err);
-//       return;
-//     }
-//     const depData = data.map(department => ({
-//       name: department.dep_name, 
-//       value: department.id
-//     })); 
-//     // console.table("department data \n", depData);
-//   inquirer
-//       .prompt([
-//         {
-//           type: "input",
-//           name: "title",
-//           message: chalk.yellow(`What is the name of the role you wish to add?`),
-//           validate: validateName,
-//         }, 
-//         {
-//           type: "input",
-//           name: "salary",
-//           message: chalk.yellow(`What is the salary going to be for this role?`),
-//           validate: validateNumber,
-//         },
-//         {
-//           type: "list",
-//           name: "role",
-//           message: chalk.yellow(`What department does the role belong to?`),
-//           choices: depData,
-//         },
-//       ])
-//       .then((data) => {
-//         db.query(
-//           `INSERT INTO roles (title, salary, dep_id) VALUES (?, ?, ?)`,
-//           [data.title, data.salary, data.role],
-//           (err, data) => {
-//             if (err) {
-//               console.log(err);
-//             }
-//             console.log(`A new role is added to the database`);
-//             mainLobby();
-//           }
-//         );
-//       });
-//   });
-// };
+const addRole = () => {
+  db.query(`SELECT DISTINCT dep_name FROM departments`, (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    const depData = data.map(department => ({
+      name: department.dep_name, 
+      value: department.id
+    })); 
+    // console.table("department data \n", depData);
+  inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "title",
+          message: chalk.yellow(`What is the name of the role you wish to add?`),
+          validate: validateName,
+        }, 
+        {
+          type: "input",
+          name: "salary",
+          message: chalk.yellow(`What is the salary going to be for this role?`),
+          validate: validateNumber,
+        },
+        {
+          type: "list",
+          name: "role",
+          message: chalk.yellow(`What department does the role belong to?`),
+          choices: depData,
+        },
+      ])
+      .then((data) => {
+        db.query(
+          `INSERT INTO roles (title, salary, dep_id) VALUES (?, ?, ?)`,
+          [data.title, data.salary, data.role],
+          (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+            console.log(`A new role is added to the database`);
+            mainLobby();
+          }
+        );
+      });
+  });
+};
 
 const viewDep = () => {
   db.query(
