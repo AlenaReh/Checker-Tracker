@@ -161,20 +161,33 @@ const addEmployee = () => {
 
 //Function for updating roles 
 const updateRole = () => {
-    db.query(`SELECT * FROM employees
-              JOIN roles ON roles.id = employees.role_id;`, 
+    db.query(`SELECT * FROM employees;`,
+              // JOIN roles ON roles.id = employees.role_id;`, 
     (err, data) => {
     if (err) {
       console.log(err);
       return;
     }
-    console.log(data);
+    // console.log(data);
 
-  const listOfNames = data.map(staffNames => ({
-    name: staffNames.last_name,
-    value: staffNames.id,
-  })); 
-  const rolesData = data.map(listOfRoles => ({
+    db.query(`SELECT * FROM roles;`, 
+    (err, roles) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    // console.log('my roles', roles);
+
+  const listOfNames = data.map(staffNames => (
+    
+    `${staffNames.id}: ${staffNames.first_name} ${staffNames.last_name} `
+  //   {
+  //   lastName: staffNames.last_name, 
+  //   firstName: staffNames.first_name,
+  //   value: staffNames.id,
+  // }
+  )); 
+  const rolesData = roles.map(listOfRoles => ({
     name: listOfRoles.title,
     value: listOfRoles.id,
   }));
@@ -187,7 +200,7 @@ const updateRole = () => {
           choices: listOfNames,
         },
         {
-          type: "input",
+          type: "list",
           name: "updatedRole",
           message: chalk.yellow(`Which role do you wish to assign to the selected employee?`),
           choices: rolesData,
@@ -195,11 +208,12 @@ const updateRole = () => {
         // console.log(rolesData, 'staff roles'),
       ])
       
-      .then((data) => {
+      .then((udateEmployeeResponse) => {
+        console.log(udateEmployeeResponse);
         db.query(
-          `UPDATE roles SET roles = ? WHERE id = ?`,
-          [data.roles, data.role],
-          (err, data) => {
+          `UPDATE employees SET role_id = ? WHERE id = ?`,
+          [udateEmployeeResponse.updatedRole, udateEmployeeResponse.updatedEmployee.split(': ')[0]],
+          (err, roles) => {
             if (err) {
               console.log(err);
             }
@@ -209,6 +223,7 @@ const updateRole = () => {
         );
       });
   });
+});
 }
 
 
