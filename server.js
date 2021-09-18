@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
 const chalk = require("chalk");
+var figlet = require('figlet');
 
 // Connect to database
 const db = mysql.createConnection(
@@ -16,7 +17,7 @@ const db = mysql.createConnection(
   console.log(`Connected to the staff_db database.`)
 );
 
-// The users input must be a string
+// Validation for a string
 const validateName = (answer) => {
   const pass = answer.match(/^[a-z A-Z]+$/);
   if (pass) {
@@ -24,7 +25,7 @@ const validateName = (answer) => {
   }
   return chalk.red("Please enter a valid name.");
 };
-// validate a numerical value
+// Validation for a numerical value
 const validateNumber = (answer) => {
   const pass = answer.match("^[0-9]+$");
   if (pass) {
@@ -33,9 +34,18 @@ const validateNumber = (answer) => {
   return chalk.red("Please enter a numeric value.");
 };
 
-// main prompt questions
+// figlet('Hello There!', function(err, data) {
+//   if (err) {
+//       console.log('Something went wrong...');
+//       console.dir(err);
+//       return;
+//   }
+//   console.log(data)
+// });
+
+// Main prompt questions
 const mainLobby = () => {
-  console.log(chalk.red("Hello!"));
+  console.log(chalk.green(figlet.textSync("Hello There!", { horizontalLayout: 'full'})));
   inquirer
     .prompt({
       type: "list",
@@ -84,6 +94,7 @@ const mainLobby = () => {
     });
 };
 
+// Function for viewing all of the emplioyees
 const viewEmployees = () => {
   db.query(
     `SELECT first_name, last_name, roles.title, roles.salary, departments.dep_name AS department, manager_id AS manager FROM employees 
@@ -157,7 +168,7 @@ const addEmployee = () => {
 };
 
 
-// function for updating roles 
+//Function for updating roles 
 const updateRole = () => {
     db.query(`SELECT * FROM employees
               JOIN roles ON roles.id = employees.role_id;`, 
@@ -210,7 +221,6 @@ const updateRole = () => {
 }
 
 
-
 //function yhat allows you to view rolls
 const viewRoles = () => {
   db.query(
@@ -227,7 +237,7 @@ const viewRoles = () => {
   );
 };
 
-//adds a new role into the database
+//Adds a new role into the database
 const addRole = () => {
   db.query(`SELECT DISTINCT dep_name FROM departments`, (err, data) => {
     if (err) {
@@ -315,8 +325,9 @@ const addDep = () => {
       });
   };
 
+//Quit function
 const quit = () => {
-  console.log(chalk.red("See you later!"));
+  console.log(chalk.green(figlet.textSync("See you next time!", { horizontalLayout: 'full'})));
   process.exit(); 
 };
 
