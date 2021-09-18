@@ -34,15 +34,6 @@ const validateNumber = (answer) => {
   return chalk.red("Please enter a numeric value.");
 };
 
-// figlet('Hello There!', function(err, data) {
-//   if (err) {
-//       console.log('Something went wrong...');
-//       console.dir(err);
-//       return;
-//   }
-//   console.log(data)
-// });
-
 // Main prompt questions
 const mainLobby = () => {
   console.log(chalk.green(figlet.textSync("Hello There!", { horizontalLayout: 'full'})));
