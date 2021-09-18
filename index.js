@@ -4,6 +4,7 @@ const cTable = require("console.table");
 const chalk = require("chalk");
 var figlet = require('figlet');
 
+console.log(chalk.green(figlet.textSync("Hello There!", { horizontalLayout: 'full'})));
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -25,6 +26,7 @@ const validateName = (answer) => {
   }
   return chalk.red("Please enter a valid name.");
 };
+
 // Validation for a numerical value
 const validateNumber = (answer) => {
   const pass = answer.match("^[0-9]+$");
@@ -36,7 +38,7 @@ const validateNumber = (answer) => {
 
 // Main prompt questions
 const mainLobby = () => {
-  console.log(chalk.green(figlet.textSync("Hello There!", { horizontalLayout: 'full'})));
+  
   inquirer
     .prompt({
       type: "list",
@@ -48,6 +50,7 @@ const mainLobby = () => {
         "Update Employee Role",
         "View All Roles",
         "Add a Role",
+        // "Delete a Role",
         "View All Departments",
         "Add a Department",
         "Quit",
@@ -70,6 +73,9 @@ const mainLobby = () => {
         case "Add a Role":
           addRole();
           break;
+        // case "Delete a Role":
+        //   deleteRole();
+        //   break;
         case "View All Departments":
           viewDep();
           break;
@@ -158,34 +164,24 @@ const addEmployee = () => {
   });
 };
 
-
 //Function for updating roles 
 const updateRole = () => {
-    db.query(`SELECT * FROM employees;`,
-              // JOIN roles ON roles.id = employees.role_id;`, 
+    db.query(`SELECT * FROM employees;`, 
     (err, data) => {
     if (err) {
       console.log(err);
       return;
     }
-    // console.log(data);
-
     db.query(`SELECT * FROM roles;`, 
     (err, roles) => {
     if (err) {
       console.log(err);
       return;
     }
-    // console.log('my roles', roles);
 
   const listOfNames = data.map(staffNames => (
     
     `${staffNames.id}: ${staffNames.first_name} ${staffNames.last_name} `
-  //   {
-  //   lastName: staffNames.last_name, 
-  //   firstName: staffNames.first_name,
-  //   value: staffNames.id,
-  // }
   )); 
   const rolesData = roles.map(listOfRoles => ({
     name: listOfRoles.title,
@@ -226,7 +222,6 @@ const updateRole = () => {
 });
 }
 
-
 //function hat allows you to view rolls
 const viewRoles = () => {
   db.query(
@@ -245,7 +240,7 @@ const viewRoles = () => {
 
 //Adds a new role into the database
 const addRole = () => {
-  db.query(`SELECT DISTINCT dep_name FROM departments`, (err, data) => {
+  db.query(`SELECT * FROM departments`, (err, data) => {
     if (err) {
       console.log(err);
       return;
@@ -291,6 +286,44 @@ const addRole = () => {
       });
   });
 };
+
+//function to delete a role
+// const deleteRole = () => {
+//   db.query(`SELECT * FROM roles`, (err, data) => {
+//     if (err) {
+//       console.log(err);
+//       return;
+//     }
+//     const deleteData = data.map(listOfRoles => ({
+//       name: listOfRoles.title, 
+//       value: listOfRoles.id
+//     })); 
+//     console.table("deleting \n", deleteData);
+//   inquirer
+//       .prompt([
+//         {
+//           type: "list",
+//           name: "deletedRole",
+//           message: chalk.yellow(`What role would you like to delete?`),
+//           choices: deleteData,
+//         },
+//       ])
+//       .then((deletedRole) => {
+//         db.query(
+//           `DELETE FROM roles WHERE id = ?`,
+//           [deletedRole.deleteData],
+//           (err, data) => {
+//             if (err) {
+//               console.log(err);
+//             }
+//             console.log(`A role has been deleted from the database`);
+//             mainLobby();
+//           }
+//         );
+//       });
+//   });
+
+// }
 
 //Function for viewing all of the departments
 const viewDep = () => {
