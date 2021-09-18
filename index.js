@@ -212,7 +212,7 @@ const updateRole = () => {
 }
 
 
-//function yhat allows you to view rolls
+//function hat allows you to view rolls
 const viewRoles = () => {
   db.query(
     `SELECT DISTINCT title, salary, departments.dep_name AS department FROM roles 
@@ -277,6 +277,7 @@ const addRole = () => {
   });
 };
 
+//Function for viewing all of the departments
 const viewDep = () => {
   db.query(
     `SELECT DISTINCT dep_name FROM departments;`,

@@ -4,7 +4,7 @@ https://github.com/AlenaReh/Checker-Tracker
 
 ## Description 
 
-This command-line application allows non-developers to easily to manage a company's employee database, using Node.js, Inquirer, and MySQL.
+This command-line application allows non-developers to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 
 ## Table of Contents
 
