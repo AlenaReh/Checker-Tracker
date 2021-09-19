@@ -30,8 +30,8 @@ You can start the application by using the following command:
 
 ## Demo 
 
-  * 
-  * ![demo_still](assets/demo.png)
+  
+  ![demo_still](assets/demo.png)
 
 
 ## Contributions

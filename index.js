@@ -367,7 +367,7 @@ const addDep = () => {
 
 //Quit function
 const quit = () => {
-  console.log(chalk.green(figlet.textSync("See you next time!", { horizontalLayout: 'full'})));
+  console.log(chalk.green(figlet.textSync("Goodbye!", { horizontalLayout: 'full'})));
   process.exit(); 
 };
 
