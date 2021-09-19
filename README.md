@@ -25,13 +25,14 @@ The dependencies must be installed for this application to work properly:
 
 You can start the application by using the following command:
 
-        node index
+        npm start
 
 
 ## Demo 
 
-  
   ![demo_still](assets/demo.png)
+  
+  https://drive.google.com/file/d/1LvRGYwJaVpvHAc6LGkQQAVX5U5k8mOHa/view
 
 
 ## Contributions

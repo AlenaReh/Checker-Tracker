@@ -2,9 +2,11 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
 const chalk = require("chalk");
-var figlet = require('figlet');
+var figlet = require("figlet");
 
-console.log(chalk.green(figlet.textSync("Hello There!", { horizontalLayout: 'full'})));
+console.log(
+  chalk.green(figlet.textSync("Hello There!", { horizontalLayout: "full" }))
+);
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -38,7 +40,6 @@ const validateNumber = (answer) => {
 
 // Main prompt questions
 const mainLobby = () => {
-  
   inquirer
     .prompt({
       type: "list",
@@ -110,17 +111,21 @@ const viewEmployees = () => {
 
 //Adding a new Employee to the database;
 const addEmployee = () => {
-  // console.log("Add an employee"); 
-  db.query(`SELECT id, title FROM roles`, (err, data) => {
+  db.query(`SELECT * FROM roles
+  JOIN employees ON employees.id = roles.id`, (err, data) => {
     if (err) {
       console.log(err);
       return;
     }
-    const roleData = data.map(role => ({
-      name: role.title, 
-      value: role.id
-    })); 
-    console.table("role data \n", roleData);
+    const roleData = data.map((role) => ({
+      name: role.title,
+      value: role.id,
+    }));
+    const managers = data.map((myManager) => ({
+      name: myManager.last_name,
+      value: myManager.manager_id,
+    }))
+
     inquirer
       .prompt([
         {
@@ -140,12 +145,12 @@ const addEmployee = () => {
           name: "title",
           message: chalk.yellow(`What is the employee's title?`),
           choices: roleData,
-        }, 
+        },
         {
           type: "list",
-          name: "firstName",
+          name: "manager",
           message: chalk.yellow(`Who is the employee's manager?`),
-          choices: ["None", "John Doe", "June Osborn"],
+          choices: managers,
         },
       ])
       .then((data) => {
@@ -156,7 +161,7 @@ const addEmployee = () => {
             if (err) {
               console.log(err);
             }
-            console.log("A new employee was added to the database");
+            console.log(chalk.red("A new employee was added to the database"));
             mainLobby();
           }
         );
@@ -164,63 +169,71 @@ const addEmployee = () => {
   });
 };
 
-//Function for updating roles 
+//Function for updating roles
 const updateRole = () => {
-    db.query(`SELECT * FROM employees;`, 
-    (err, data) => {
+  db.query(`SELECT * FROM employees;`, (err, data) => {
     if (err) {
       console.log(err);
       return;
     }
-    db.query(`SELECT * FROM roles;`, 
-    (err, roles) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
+    db.query(`SELECT * FROM roles;`, (err, roles) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
 
-  const listOfNames = data.map(staffNames => (
-    
-    `${staffNames.id}: ${staffNames.first_name} ${staffNames.last_name} `
-  )); 
-  const rolesData = roles.map(listOfRoles => ({
-    name: listOfRoles.title,
-    value: listOfRoles.id,
-  }));
-  inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "updatedEmployee",
-          message: chalk.yellow(`Which employee's role would you like to update?`),
-          choices: listOfNames,
-        },
-        {
-          type: "list",
-          name: "updatedRole",
-          message: chalk.yellow(`Which role do you wish to assign to the selected employee?`),
-          choices: rolesData,
-        },
-        // console.log(rolesData, 'staff roles'),
-      ])
-      
-      .then((udateEmployeeResponse) => {
-        console.log(udateEmployeeResponse);
-        db.query(
-          `UPDATE employees SET role_id = ? WHERE id = ?`,
-          [udateEmployeeResponse.updatedRole, udateEmployeeResponse.updatedEmployee.split(': ')[0]],
-          (err, roles) => {
-            if (err) {
-              console.log(err);
+      const listOfNames = data.map(
+        (staffNames) =>
+          `${staffNames.id}: ${staffNames.first_name} ${staffNames.last_name} `
+      );
+      const rolesData = roles.map((listOfRoles) => ({
+        name: listOfRoles.title,
+        value: listOfRoles.id,
+      }));
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "updatedEmployee",
+            message: chalk.yellow(
+              `Which employee's role would you like to update?`
+            ),
+            choices: listOfNames,
+          },
+          {
+            type: "list",
+            name: "updatedRole",
+            message: chalk.yellow(
+              `Which role do you wish to assign to the selected employee?`
+            ),
+            choices: rolesData,
+          },
+        ])
+
+        .then((udateEmployeeResponse) => {
+          console.log(udateEmployeeResponse);
+          db.query(
+            `UPDATE employees SET role_id = ? WHERE id = ?`,
+            [
+              udateEmployeeResponse.updatedRole,
+              udateEmployeeResponse.updatedEmployee.split(": ")[0],
+            ],
+            (err, roles) => {
+              if (err) {
+                console.log(err);
+              }
+              console.log(
+                chalk.red(
+                  `An employee role has been successfully updated in the database!`
+                )
+              );
+              mainLobby();
             }
-            console.log(`An employee role has been successfully updated in the database!`);
-            mainLobby();
-          }
-        );
-      });
+          );
+        });
+    });
   });
-});
-}
+};
 
 //function hat allows you to view rolls
 const viewRoles = () => {
@@ -245,19 +258,19 @@ const addRole = () => {
       console.log(err);
       return;
     }
-    const depData = data.map(department => ({
-      name: department.dep_name, 
-      value: department.id
-    })); 
+    const depData = data.map((department) => ({
+      name: department.dep_name,
+      value: department.id,
+    }));
     // console.table("department data \n", depData);
-  inquirer
+    inquirer
       .prompt([
         {
           type: "input",
           name: "title",
           message: chalk.yellow(`What is the name of the role you wish to add?`),
           validate: validateName,
-        }, 
+        },
         {
           type: "input",
           name: "salary",
@@ -279,7 +292,7 @@ const addRole = () => {
             if (err) {
               console.log(err);
             }
-            console.log(`A new role is added to the database`);
+            console.log(chalk.red(`A new role is added to the database`));
             mainLobby();
           }
         );
@@ -295,9 +308,9 @@ const addRole = () => {
 //       return;
 //     }
 //     const deleteData = data.map(listOfRoles => ({
-//       name: listOfRoles.title, 
+//       name: listOfRoles.title,
 //       value: listOfRoles.id
-//     })); 
+//     }));
 //     console.table("deleting \n", deleteData);
 //   inquirer
 //       .prompt([
@@ -327,48 +340,54 @@ const addRole = () => {
 
 //Function for viewing all of the departments
 const viewDep = () => {
-  db.query(
-    `SELECT DISTINCT dep_name FROM departments;`,
-    (err, data) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.table(data);
-      mainLobby();
+  db.query(`SELECT DISTINCT dep_name FROM departments;`, (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
     }
-  );
-}
+    console.table(data);
+    mainLobby();
+  });
+};
 
 //Adds a new department to the database;
 const addDep = () => {
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "department",
-          message: chalk.yellow(`What is the name of the department you wish to add?`),
-          validate: validateName,
-        }, 
-      ])
-      .then((data) => {
-        db.query(
-          `INSERT INTO departments (dep_name) VALUES (?)`,
-          data.department,
-          (err, data) => {
-            if (err) {
-              console.log(err);
-            }
-            console.log(`A new department ${data.department} is added to the database`);
-            mainLobby();
-          });
-      });
-  };
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "department",
+        message: chalk.yellow(
+          `What is the name of the department you wish to add?`
+        ),
+        validate: validateName,
+      },
+    ])
+    .then((data) => {
+      db.query(
+        `INSERT INTO departments (dep_name) VALUES (?)`,
+        data.department,
+        (err, data) => {
+          if (err) {
+            console.log(err);
+          }
+          console.log(
+            chalk.red(
+              `A new department ${data.department} is added to the database`
+            )
+          );
+          mainLobby();
+        }
+      );
+    });
+};
 
 //Quit function
 const quit = () => {
-  console.log(chalk.green(figlet.textSync("Goodbye!", { horizontalLayout: 'full'})));
-  process.exit(); 
+  console.log(
+    chalk.green(figlet.textSync("Goodbye!", { horizontalLayout: "full" }))
+  );
+  process.exit();
 };
 
 mainLobby();
