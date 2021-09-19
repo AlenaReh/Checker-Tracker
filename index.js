@@ -95,7 +95,7 @@ const mainLobby = () => {
 // Function for viewing all of the emplioyees
 const viewEmployees = () => {
   db.query(
-    `SELECT first_name, last_name, roles.title, roles.salary, departments.dep_name AS department, manager_id AS manager FROM employees 
+    `SELECT employees.id, first_name, last_name, roles.title, roles.salary, departments.dep_name AS department, manager_id AS manager FROM employees 
     JOIN roles ON roles.id = employees.role_id
     JOIN departments ON departments.id = roles.dep_id;`,
     (err, data) => {
@@ -238,7 +238,7 @@ const updateRole = () => {
 //function hat allows you to view rolls
 const viewRoles = () => {
   db.query(
-    `SELECT DISTINCT title, salary, departments.dep_name AS department FROM roles 
+    `SELECT roles.id, title, salary, departments.dep_name AS department FROM roles 
     JOIN departments on departments.id = roles.dep_id;`,
     (err, data) => {
       if (err) {
@@ -340,7 +340,7 @@ const addRole = () => {
 
 //Function for viewing all of the departments
 const viewDep = () => {
-  db.query(`SELECT DISTINCT dep_name FROM departments;`, (err, data) => {
+  db.query(`SELECT * FROM departments;`, (err, data) => {
     if (err) {
       console.log(err);
       return;
